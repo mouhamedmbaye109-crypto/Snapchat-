@@ -1,0 +1,22 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 96 96" role="img" aria-label="Snapchat Plus">
+  <defs>
+    <linearGradient id="or" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0" stop-color="#FFD25E"/>
+      <stop offset="1" stop-color="#E8A315"/>
+    </linearGradient>
+  </defs>
+  <rect width="96" height="96" rx="22" fill="#131313"/>
+  <path d="M50 9 C30.5 9 17.5 23 17.5 42.5 C17.5 51.5 15.5 56.5 11.5 60.5
+           C9.2 62.8 10.2 66.2 13.5 66.2 C17.5 66.2 19.6 68.6 20.6 72.6
+           C21.6 77 23.8 79.8 27.6 79.8 C31.4 79.8 33.6 77.4 35.6 77.4
+           C37.6 77.4 38.6 80.4 39.6 84.4 C40.6 88 42.8 90 46.2 90
+           C49.6 90 50 86.2 50 86.2 C50 86.2 50.4 90 53.8 90
+           C57.2 90 59.4 88 60.4 84.4 C61.4 80.4 62.4 77.4 64.4 77.4
+           C66.4 77.4 68.6 79.8 72.4 79.8 C76.2 79.8 78.4 77 79.4 72.6
+           C80.4 68.6 82.5 66.2 86.5 66.2 C89.8 66.2 90.8 62.8 88.5 60.5
+           C84.5 56.5 82.5 51.5 82.5 42.5 C82.5 23 69.5 9 50 9 Z"
+        fill="none" stroke="url(#or)" stroke-width="4.6"
+        stroke-linecap="round" stroke-linejoin="round"
+        transform="translate(17 21) scale(.63)"/>
+  <path d="M73 22v14M66 29h14" fill="none" stroke="#fff" stroke-width="3.4" stroke-linecap="round"/>
+</svg>
