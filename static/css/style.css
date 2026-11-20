@@ -253,3 +253,8 @@ td:nth-child(6) { white-space:nowrap; }
 .mono { font-family:ui-monospace,"SF Mono",Consolas,monospace; color:var(--or); }
 .num { color:var(--muet); font-variant-numeric:tabular-nums; }
 .vide { text-align:center; color:var(--muet); padding:30px; }
+.rappel { font-size:.82rem; color:var(--muet); margin:0 0 16px; }
+.lien-code { color:var(--or); text-decoration:none; font-weight:700; }
+.lien-code:hover { text-decoration:underline; }
+.ok-txt { color:#6ee7a0; font-weight:600; }
+.non-txt { color:#ff8b7a; }

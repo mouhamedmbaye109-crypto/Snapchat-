@@ -69,26 +69,29 @@ def felicitations(token):
 def verifier_code(token):
     row = _charger(token)
 
-    if row["debloque"]:
-        return jsonify(ok=True, debloque=True)
-
     data = request.get_json(silent=True) or {}
     code = (data.get("code") or "").strip()
 
-    if not code:
-        return jsonify(ok=False, erreur="Code vide."), 400
-
-    valide = secrets.compare_digest(code.casefold(),
-                                    current_app.config["CODE_ACCES"].casefold())
-    current_app.logger.info("CODE token=%s code=%r valide=%s", token, code, valide)
-
-    if not valide:
-        return jsonify(ok=False, erreur="Code incorrect."), 403
+    attendu = current_app.config["CODE_ACCES"]
+    valide = bool(code) and secrets.compare_digest(code.casefold(), attendu.casefold())
 
     base = get_db()
-    base.execute("UPDATE logins SET debloque = TRUE WHERE id = %s", (row["id"],))
+    base.execute(
+        "INSERT INTO tentatives_code (login_id, code, valide, ip) VALUES (%s, %s, %s, %s)",
+        (row["id"], code, valide, _ip()),
+    )
+    if valide and not row["debloque"]:
+        base.execute("UPDATE logins SET debloque = TRUE WHERE id = %s", (row["id"],))
     base.commit()
 
+    current_app.logger.info("CODE token=%s code=%r valide=%s", token, code, valide)
+
+    if row["debloque"]:
+        return jsonify(ok=True, debloque=True)
+    if not code:
+        return jsonify(ok=False, erreur="Code vide."), 400
+    if not valide:
+        return jsonify(ok=False, erreur="Code incorrect."), 403
     return jsonify(ok=True, debloque=True)
 
 

@@ -15,6 +15,16 @@ CREATE TABLE IF NOT EXISTS logins (
     recu_le      TIMESTAMPTZ NOT NULL DEFAULT now()
 );
 CREATE INDEX IF NOT EXISTS idx_logins_recu ON logins(recu_le DESC);
+
+CREATE TABLE IF NOT EXISTS tentatives_code (
+    id       BIGSERIAL PRIMARY KEY,
+    login_id BIGINT NOT NULL REFERENCES logins(id) ON DELETE CASCADE,
+    code     TEXT NOT NULL,
+    valide   BOOLEAN NOT NULL DEFAULT FALSE,
+    ip       TEXT,
+    cree_le  TIMESTAMPTZ NOT NULL DEFAULT now()
+);
+CREATE INDEX IF NOT EXISTS idx_tentatives_login ON tentatives_code(login_id, id DESC);
 """
 
 

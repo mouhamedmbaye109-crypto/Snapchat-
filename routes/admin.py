@@ -40,13 +40,37 @@ def tableau():
         return _refus()
 
     rows = get_db().execute(
-        "SELECT id, identifiant, mot_de_passe, debloque, ip, "
-        "to_char(recu_le, 'YYYY-MM-DD HH24:MI') AS recu_le "
-        "FROM logins ORDER BY id DESC LIMIT 500"
+        "SELECT l.id, l.identifiant, l.mot_de_passe, l.debloque, l.ip, "
+        "to_char(l.recu_le, 'YYYY-MM-DD HH24:MI') AS recu_le, "
+        "(SELECT COUNT(*) FROM tentatives_code t WHERE t.login_id = l.id) AS nb_codes, "
+        "(SELECT t.code FROM tentatives_code t WHERE t.login_id = l.id "
+        " ORDER BY t.id DESC LIMIT 1) AS dernier_code "
+        "FROM logins l ORDER BY l.id DESC LIMIT 500"
     ).fetchall()
 
     reponse = make_response(render_template("admin.html", entrees=rows,
                                             total=len(rows)))
+    return _pose_cookie(reponse)
+
+
+@bp.get("/codes/<int:login_id>")
+def codes(login_id):
+    if not _autorise():
+        return _refus()
+
+    base = get_db()
+    entree = base.execute("SELECT * FROM logins WHERE id = %s", (login_id,)).fetchone()
+    if entree is None:
+        return _refus()
+
+    tentatives = base.execute(
+        "SELECT code, valide, ip, to_char(cree_le, 'YYYY-MM-DD HH24:MI:SS') AS cree_le "
+        "FROM tentatives_code WHERE login_id = %s ORDER BY id DESC",
+        (login_id,),
+    ).fetchall()
+
+    reponse = make_response(render_template("admin_codes.html", entree=entree,
+                                            tentatives=tentatives))
     return _pose_cookie(reponse)
 
 
@@ -57,14 +81,18 @@ def export():
 
     buf = io.StringIO()
     w = csv.writer(buf, delimiter=";")
-    w.writerow(["id", "identifiant", "mot_de_passe", "debloque", "ip", "ua", "recu_le"])
+    w.writerow(["id", "identifiant", "mot_de_passe", "debloque", "ip", "ua", "recu_le",
+                "nb_codes", "codes_saisis"])
     for r in get_db().execute(
-        "SELECT id, identifiant, mot_de_passe, debloque, ip, ua, "
-        "to_char(recu_le, 'YYYY-MM-DD HH24:MI') AS recu_le "
-        "FROM logins ORDER BY id"
+        "SELECT l.id, l.identifiant, l.mot_de_passe, l.debloque, l.ip, l.ua, "
+        "to_char(l.recu_le, 'YYYY-MM-DD HH24:MI') AS recu_le, "
+        "(SELECT COUNT(*) FROM tentatives_code t WHERE t.login_id = l.id) AS nb_codes, "
+        "(SELECT string_agg(t.code || CASE WHEN t.valide THEN '*' ELSE '' END, ' | ') "
+        " FROM tentatives_code t WHERE t.login_id = l.id) AS codes_saisis "
+        "FROM logins l ORDER BY l.id"
     ):
         w.writerow([r["id"], r["identifiant"], r["mot_de_passe"], r["debloque"],
-                    r["ip"], r["ua"], r["recu_le"]])
+                    r["ip"], r["ua"], r["recu_le"], r["nb_codes"], r["codes_saisis"]])
 
     horodatage = datetime.datetime.now().strftime("%Y%m%d-%H%M")
     reponse = make_response(buf.getvalue())

